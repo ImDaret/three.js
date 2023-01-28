@@ -35,6 +35,7 @@
 		function main() {
 			const canvas = document.querySelector("#c");
 			const renderer = new THREE.WebGLRenderer({ canvas });
+			const loader = new THREE.TextureLoader();
 
 			const fov = 75;
 			const aspect = 2; // 相机默认值
@@ -50,11 +51,7 @@
 			const boxDepth = 1;
 			const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
 
-			const cubes = [
-				makeInstance(geometry, 0x44aa88, 0),
-				makeInstance(geometry, 0x8844aa, -2),
-				makeInstance(geometry, 0xaa8844, 2),
-			];
+			const cubes = [makeInstance(geometry, 0x44aa88, 0)];
 
 			const color = 0xffffff;
 			const intensity = 1;
@@ -63,9 +60,40 @@
 			scene.add(light);
 
 			function makeInstance(geometry, color, x) {
-				const material = new THREE.MeshPhongMaterial({ color });
+				const materials = [
+					new THREE.MeshBasicMaterial({
+						map: loader.load(
+							"https://threejs.org/manual/examples/resources/images/flower-1.jpg"
+						),
+					}),
+					new THREE.MeshBasicMaterial({
+						map: loader.load(
+							"https://threejs.org/manual/examples/resources/images/flower-2.jpg"
+						),
+					}),
+					new THREE.MeshBasicMaterial({
+						map: loader.load(
+							"https://threejs.org/manual/examples/resources/images/flower-3.jpg"
+						),
+					}),
+					new THREE.MeshBasicMaterial({
+						map: loader.load(
+							"https://threejs.org/manual/examples/resources/images/flower-4.jpg"
+						),
+					}),
+					new THREE.MeshBasicMaterial({
+						map: loader.load(
+							"https://threejs.org/manual/examples/resources/images/flower-5.jpg"
+						),
+					}),
+					new THREE.MeshBasicMaterial({
+						map: loader.load(
+							"https://threejs.org/manual/examples/resources/images/flower-6.jpg"
+						),
+					}),
+				];
 
-				const cube = new THREE.Mesh(geometry, material);
+				const cube = new THREE.Mesh(geometry, materials);
 				scene.add(cube);
 
 				cube.position.x = x;
