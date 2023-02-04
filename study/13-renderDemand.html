@@ -24,12 +24,14 @@
 	<script type="importmap">
 		{
 			"imports": {
-				"three": "../build/three.module.js"
+				"three": "../build/three.module.js",
+				"three/addons/": "../examples/jsm/"
 			}
 		}
 	</script>
 	<script type="module">
 		import * as THREE from "three";
+		import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 		function main() {
 			const canvas = document.querySelector("#c");
@@ -65,11 +67,9 @@
 				return cube;
 			}
 
-			const cubes = [
-				makeInstance(0x44aa88, 0),
-				makeInstance(0x8844aa, -2),
-				makeInstance(0xaa8844, 2),
-			];
+			makeInstance(0x44aa88, 0);
+			makeInstance(0x8844aa, -2);
+			makeInstance(0xaa8844, 2);
 
 			function resizeRendererToDisplaySize() {
 				const renderDom = rerender.domElement;
@@ -85,22 +85,31 @@
 				return needResize;
 			}
 
-			function render(time) {
-				time *= 0.001;
+			const control = new OrbitControls(camera, canvas);
+			control.enableDamping = true;
+			control.target.set(0, 0, 0);
+			control.update();
 
+			let renderRequested = false;
+
+			function render() {
+				renderRequested = false;
 				resizeRendererToDisplaySize();
 
-				cubes.forEach((cube, ndx) => {
-					const speed = 1 + ndx * 0.1;
-					const rot = time * speed;
-					cube.rotation.x = rot;
-					cube.rotation.y = rot;
-				});
-
 				rerender.render(scene, camera);
-				requestAnimationFrame(render);
+				control.update();
 			}
-			requestAnimationFrame(render);
+			render();
+
+			function requestRenderIfNotRequested() {
+				if (!renderRequested) {
+					renderRequested = true;
+					requestAnimationFrame(render);
+				}
+			}
+
+			control.addEventListener("change", requestRenderIfNotRequested);
+			window.addEventListener("resize", requestRenderIfNotRequested);
 		}
 
 		main();
